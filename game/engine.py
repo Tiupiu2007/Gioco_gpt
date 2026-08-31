@@ -1,5 +1,6 @@
-from .models import GameState, Character
+from .models import GameState
 from .save import save_game
+from .memory import context
 
 INTRO = '''La pioggia batte contro la strada deserta. Torni a casa dopo una giornata apparentemente normale.
 Un istante dopo, una luce bianca inghiotte ogni cosa.
@@ -22,7 +23,6 @@ class GameEngine:
     def start(self):
         if not self.state.world.history:
             self.state.world.history.append(INTRO)
-            return INTRO
         return self.state.world.history[-1]
 
     def apply_time(self, hours=1):
@@ -37,7 +37,10 @@ class GameEngine:
             return "Devi prima decidere cosa fare."
         self.apply_time(1)
         if self.narrator and self.narrator.available():
-            text = self.narrator.narrate(self.state.to_dict(), action)
+            if hasattr(self.narrator, "narrate_game_state"):
+                text = self.narrator.narrate_game_state(self.state, action)
+            else:
+                text = self.narrator.narrate(context(self.state), action)
         else:
             text = self._fallback(action)
         self.state.world.history.append(f"AZIONE: {action}\n{text}")
@@ -45,6 +48,6 @@ class GameEngine:
         return text
 
     def _fallback(self, action: str) -> str:
-        return (f"Agisci: {action}. Il mondo reagisce, ma per ora nessuno sembra comprendere davvero le tue intenzioni. "
+        return (f"Dopo la tua azione — {action} — il mondo reagisce senza aspettare. "
                 "Il vento cambia direzione e dalla foresta arriva un rumore di rami spezzati. "
                 "Qualcosa potrebbe averti notato.\n\n**Cosa fai?**")
