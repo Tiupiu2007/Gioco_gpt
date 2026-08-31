@@ -14,4 +14,4 @@ Storia anime isekai interattiva giocata direttamente in chat.
 Il repository serve come archivio della storia e dei salvataggi, non come programma da eseguire.
 
 ## Capitoli
-- [Capitolo 1 — Le due lune](storia/Capitolo_01.md)
+- Capitolo 1 — Le due lune
